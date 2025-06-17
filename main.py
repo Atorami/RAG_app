@@ -1,3 +1,5 @@
+#### Part 1: Data Preparation and Vectorization ####
+
 # Imnport lib for loading documents and pdf loader
 from langchain.document_loaders import DirectoryLoader
 from langchain.document_loaders import PyPDFLoader
@@ -86,3 +88,15 @@ def store_embeddings(texts, embeddings, metadatas):
     return collection
 
 collection = store_embeddings(texts, embeddings, metadatas)
+
+
+
+#### Part 2: LLM Integration ####
+
+#### 1.LLM Setup ####
+
+from transformers import AutoModelForCausalLM, AutoTokenizer
+
+
+tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-base")
+model = AutoModelForCausalLM.from_pretrained("google/flan-t5-base")
