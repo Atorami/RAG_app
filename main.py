@@ -97,6 +97,24 @@ collection = store_embeddings(texts, embeddings, metadatas)
 
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-
 tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-base")
 model = AutoModelForCausalLM.from_pretrained("google/flan-t5-base")
+embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+
+def search_docs(query, collection, embedding_model, top_k=5):
+
+    query_embedding = embedding_model.encode([query], convert_to_tensor=False)[0]
+
+    results = collection.query(
+        query_embeddings=[query_embedding],
+        n_results=top_k,
+        include=["documents", "metadatas"]
+    )
+    
+    return results['documents'][0], results['metadatas'][0]
+
+
+# testing the search function
+query = "What is this book about?"
+
+docs, metas = search_docs(query, collection, embedding_model)
