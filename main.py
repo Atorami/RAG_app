@@ -1,9 +1,7 @@
 #### Part 1: Data Preparation and Vectorization ####
 
-# Imnport lib for loading documents and pdf loader
 from langchain.document_loaders import DirectoryLoader
 from langchain.document_loaders import PyPDFLoader
-# Import lib for text splitting
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 
@@ -62,20 +60,13 @@ embeddings = create_embeddings(texts)
 
 
 def store_embeddings(texts, embeddings, metadatas):
-     # Checking if the chroma path exists, if not create it
     if not os.path.exists(CHROMA_PATH):
         os.makedirs(CHROMA_PATH)
 
-    # Initialize ChromaDB client with DuckDB and Parquet storage
-    chroma_client = chromadb.Client(Settings(
-        chroma_db_impl="duckdb+parquet", 
-        persist_directory=CHROMA_PATH
-    ))
+    chroma_client = chromadb.PersistentClient(path=CHROMA_PATH)
 
-    # Create or get the collection 
     collection = chroma_client.get_or_create_collection(name="documents")
-    
-    # Adding documents to the collection
+
     collection.add(
         documents=texts,
         embeddings=embeddings,
@@ -83,8 +74,6 @@ def store_embeddings(texts, embeddings, metadatas):
         ids=[f"doc_{i}" for i in range(len(texts))]
     )
 
-    # Saving to disk
-    chroma_client.persist()
     return collection
 
 collection = store_embeddings(texts, embeddings, metadatas)
@@ -95,10 +84,10 @@ collection = store_embeddings(texts, embeddings, metadatas)
 
 #### 1.LLM Setup ####
 
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
 tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-base")
-model = AutoModelForCausalLM.from_pretrained("google/flan-t5-base")
+model =AutoModelForSeq2SeqLM.from_pretrained("google/flan-t5-base")
 embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
 
 def search_docs(query, collection, embedding_model, top_k=5):
@@ -118,3 +107,35 @@ def search_docs(query, collection, embedding_model, top_k=5):
 query = "What is this book about?"
 
 docs, metas = search_docs(query, collection, embedding_model)
+
+def build_prompt(query, docs):
+    context = "\n\n".join(docs)
+    promt = (
+        f"Context: {context}\n\n"
+        f"Question: {query}\n"
+        "Answer:"
+    )
+    return promt
+
+def generate_answer(prompt, model, tokenizer, max_length=300):
+    inputs = tokenizer(prompt, return_tensors="pt", truncation=True)
+    outputs = model.generate(**inputs, max_new_tokens=max_length)
+    answer = tokenizer.decode(outputs[0], skip_special_tokens=True)
+    return answer
+
+def rag_pipeline(query, collection, embedding_model, llm_model, tokenizer):
+    docs, metas = search_docs(query, collection, embedding_model)
+    prompt = build_prompt(query, docs)
+    answer = generate_answer(prompt, llm_model, tokenizer)
+    return answer, docs, metas
+
+
+#testing the RAG pipeline
+
+query = "What is this book about?"
+answer, docs, metas = rag_pipeline(query, collection, embedding_model, model, tokenizer)
+
+print("\n Answer:\n", answer)
+print("\n Sources:")
+for meta in metas:
+    print(meta)
