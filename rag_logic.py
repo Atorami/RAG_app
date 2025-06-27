@@ -103,11 +103,6 @@ def search_docs(query, collection, embedding_model, top_k=5):
     return results['documents'][0], results['metadatas'][0]
 
 
-# testing the search function
-query = "What is this book about?"
-
-docs, metas = search_docs(query, collection, embedding_model)
-
 def build_prompt(query, docs):
     context = "\n\n".join(docs)
     promt = (
@@ -128,14 +123,3 @@ def rag_pipeline(query, collection, embedding_model, llm_model, tokenizer):
     prompt = build_prompt(query, docs)
     answer = generate_answer(prompt, llm_model, tokenizer)
     return answer, docs, metas
-
-
-#testing the RAG pipeline
-
-query = "What is this book about?"
-answer, docs, metas = rag_pipeline(query, collection, embedding_model, model, tokenizer)
-
-print("\n Answer:\n", answer)
-print("\n Sources:")
-for meta in metas:
-    print(meta)

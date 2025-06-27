@@ -1,3 +1,6 @@
-./data
-./chroma_db
-./.venv
+data/
+chroma_db/
+.venv/
+api/node_modules/
+__pycache__/
+rag_backend/__pycache__/
