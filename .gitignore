@@ -1,6 +1,10 @@
-data/
+# Documents and indexes never go into git
+data/*
+!data/.gitkeep
+*.npz
 chroma_db/
+
 .venv/
-api/node_modules/
 __pycache__/
-rag_backend/__pycache__/
+*.egg-info/
+.pytest_cache/
