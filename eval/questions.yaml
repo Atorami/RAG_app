@@ -1,0 +1,47 @@
+# Control questions for the sample manuals.
+# expect_source: file that must be among the retrieved sources ("none" = should refuse).
+# expect_terms: words a correct answer must contain (checked only in --llm mode).
+# Extend this list to 30+ questions for your own manuals before trusting the assistant.
+
+- question: What does alarm F-0021 mean?
+  expect_source: vfd200_drive.md
+  expect_terms: [overcurrent]
+- question: What should I do about F-0034 heatsink overtemperature?
+  expect_source: vfd200_drive.md
+  expect_terms: [fan]
+- question: How long must I wait after switching off before opening the VFD-200 cover?
+  expect_source: vfd200_drive.md
+  expect_terms: ["5 minutes"]
+- question: Which parameter sets the Modbus slave address?
+  expect_source: vfd200_drive.md
+  expect_terms: [P-601]
+- question: What termination resistor is needed on the RS-485 line?
+  expect_source: vfd200_drive.md
+  expect_terms: ["120"]
+- question: How do I reset earth fault F-0050?
+  expect_source: vfd200_drive.md
+  expect_terms: [power cycle]
+- question: How often must the cooling fan of the converter be replaced?
+  expect_source: vfd200_drive.md
+  expect_terms: ["30 000"]
+- question: How much shaft seal leakage is acceptable on the SWP-50 pump?
+  expect_source: swp50_pump.md
+  expect_terms: ["10 drops"]
+- question: At what vibration level should the seawater pump be stopped?
+  expect_source: swp50_pump.md
+  expect_terms: ["4.5"]
+- question: How often is the zinc anode replaced?
+  expect_source: swp50_pump.md
+  expect_terms: ["3 000"]
+- question: What happens if the pump runs dry?
+  expect_source: swp50_pump.md
+  expect_terms: [seal]
+- question: How much grease goes into the motor bearings?
+  expect_source: swp50_pump.md
+  expect_terms: ["15 g"]
+- question: What is the capital of Australia?
+  expect_source: none
+  expect_terms: []
+- question: Who designed the ship's hull?
+  expect_source: none
+  expect_terms: []
